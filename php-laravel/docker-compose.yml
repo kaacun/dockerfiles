@@ -1,0 +1,14 @@
+version: '2'
+services:
+  db:
+    image: mysql
+    environment:
+        - MYSQL_ALLOW_EMPTY_PASSWORD="yes"
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    volumes:
+      - ~/Workspace/docker/app/web:/var/www/html
+    depends_on:
+      - db

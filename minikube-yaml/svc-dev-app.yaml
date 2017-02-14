@@ -1,0 +1,18 @@
+# rc-dev-app.yamlと一緒に使用する。
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-dev-app
+  labels:
+    name: svc-dev-app
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      # アクセス先のportを変更したい場合nodePortを変更する。
+      # なお、30000-32767までしか使用できない。
+      # また、他のnodePortと被ってはいけない。
+      nodePort: 30304
+  selector:
+    name: dev-app

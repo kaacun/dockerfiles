@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-phpmyadmin
+  labels:
+    name: svc-phpmyadmin
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      # アクセス先のportを変更したい場合nodePortを変更する。
+      # なお、30000-32767までしか使用できない。
+      # また、他のnodePortと被ってはいけない。
+      nodePort: 30305
+  selector:
+    name: phpmyadmin

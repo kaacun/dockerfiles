@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: rc-mysql
+  name: rc-mysql
+spec:
+  replicas: 1
+  selector:
+    name: minikube-mysql
+    version: "20161118"
+  template:
+    metadata:
+      labels:
+        name: minikube-mysql
+        version: "20161118"
+    spec:
+      containers:
+        # mysqlの公式イメージを使用する
+        # imageは使用するプロジェクトで適宜変更すること
+        # https://hub.docker.com/_/mysql/
+        - name: mysql
+          image: mysql:5.6
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: "yes"
+      # mysqlデータを永続化する(minikube stopしてもデータを残しておく)
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      # 自動リストアしたい場合 /docker-entrypoint-initdb.d dir以下にsqlかshを追加する。
+          volumeMounts: 
+            - name: initsql
+              mountPath: /docker-entrypoint-initdb.d/dump.sql
+      # 立ち上げ時に自動でリストアする場合はリストアしたいsqlまたはshを指定する
+      volumes:
+      # 基本的にemptyDirを使用することを推奨。RCのライフサイクルでデータが消えるので注意
+        - name: mysql-storage
+          emptyDir: {}
+        - name: initsql
+          hostPath:
+            path: /Users/k_ohhara/Workspace/docker/yaml/initdb/dump.sql
+      # RCを消してもデータ永続化する場合は以下を使用する。
+      # rc-pv.yamlとrc-pvc.yamlでPersistentVolumeとPersistentVolumeClaimを作成しておく必要あり
+      #  - name: mysql-storage
+      #    persistentVolumeClaim:
+      #      claimName: "pvclaim01"
